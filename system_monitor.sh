@@ -11,7 +11,7 @@ send_alert(){
     echo "$(tput setaf 1)ALERT: $1 usage exceeded threshold! Current value:$2$(tput sgr0)"
 }
 # sgr0 é o padrão do terminal || setaf 1 -> deixa o terminal vermelho para dar a sensação de alerta 
-while true; do
+#while true; do
 # Logica para monitorar o CPU
 
 cpu_usage=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $3}') 
@@ -19,7 +19,7 @@ cpu_usage=$(top -bn1 | grep "Cpu(s)" | awk '{print $2 + $3}')
 #grep vai procurar o que conter "Cpu(s)"
 #awk vai extrair e somar a soma das porcentagens do usuário e do sistema.
 
-cpu_usage=$(cpu_usage%.*) # Converte o valor para inteiro
+cpu_usage=${cpu_usage%.*} # Converte o valor para inteiro
 echo "Current CPU usage: $cpu_usage%"
 
 if ((cpu_usage >= CPU_THRESHOLD)); then
@@ -28,7 +28,7 @@ fi
 
 # Logica para monitorar a Memória
 
-mem_usage=$(free | awk '/Mem/ {printf("%3.1f", ($3/$2) * 100)}')
+mem_usage=$(free | awk '/Mem/ {printf("%3.1f", ($3/$2) * 100)}' | bc -l)
 
 if ((mem_usage >= MEMORY_THRESHOLD)); then
 send_alert "MEMORY" "$mem_usage%"
@@ -44,10 +44,9 @@ fi
 
 # Exibe as informações de uso da máquina
 
-clear
-echo 'CPU: $cpu_usage %'
-echo 'MEM: $mem_usage %'
-echo 'DISK: $disk_usage %'
-echo 'CPU: $cpu_usage %'
+#clear
+echo "CPU: $cpu_usage %"
+echo "MEM: $mem_usage %"
+echo "DISK: $disk_usage %"
 
-done
+#done
